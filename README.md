@@ -1,66 +1,146 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel User Management API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful API built with Laravel 10 for user management with JWT authentication.
 
-## About Laravel
+## Requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP ^8.1
+- PostgreSQL
+- Composer
+- Laravel 10.x
+- JWT Auth
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. Clone the repository
+```bash
+git clone https://github.com/HarisTanone/Backend-api
+```
 
-## Learning Laravel
+2. Install dependencies
+```bash
+composer install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. Copy the environment file
+```bash
+cp .env.example .env
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+4. Configure your PostgreSQL database connection in `.env`:
+```
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+5. Generate application key
+```bash
+php artisan key:generate
+```
 
-## Laravel Sponsors
+6. Generate JWT secret
+```bash
+php artisan jwt:secret
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+7. Run migrations
+```bash
+php artisan migrate
+```
 
-### Premium Partners
+## Project Structure
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+The project follows a service-repository pattern with the following key components:
 
-## Contributing
+- `app/Http/Controllers/`
+  - `AuthController.php` - Handles authentication
+  - `UserController.php` - Manages user operations
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- `app/Services/`
+  - `UserService.php` - Business logic for user management
 
-## Code of Conduct
+## API Endpoints
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Authentication
 
-## Security Vulnerabilities
+#### Login
+```
+POST /api/login
+```
+Parameters:
+- `username` (required|string|min:4|max:100)
+- `password` (required|string|min:8|max:100)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### User Management
 
-## License
+All endpoints require JWT authentication.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Get All Users
+```
+GET /api/users
+```
+
+#### Get Specific User
+```
+GET /api/users/{id}
+```
+
+#### Create User
+```
+POST /api/users
+```
+Parameters:
+- `name` (required|string|min:4|max:100)
+- `username` (required|string|min:4|max:100|unique)
+- `password` (required|string|min:8|max:100)
+- `confirm_password` (required|string|min:8|max:100|same:password)
+
+#### Update User
+```
+PUT /api/users/{id}
+```
+Parameters:
+- `name` (required|string|min:4|max:100)
+- `username` (required|string|min:4|max:100|unique)
+
+#### Update Password
+```
+PUT /api/users/{id}/password
+```
+Parameters:
+- `password` (required|string|min:8|max:100)
+- `confirm_password` (required|string|min:8|max:100|same:password)
+
+#### Delete User
+```
+DELETE /api/users/{id}
+```
+Parameters:
+- `confirm_password` (required|string|min:8|max:100)
+
+## Testing
+
+The project includes unit tests for all user operations. Run tests using:
+
+```bash
+php artisan test
+```
+
+Test cases cover:
+- User listing
+- User creation
+- User details retrieval
+- User update
+- Password update
+- Input validation
+- Authentication
+
+## Security
+
+- All endpoints (except login) require JWT authentication
+- Password hashing using Laravel's Hash facade
+- Input validation for all requests
